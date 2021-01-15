@@ -250,6 +250,7 @@ def generate_video(args, image_folder, out_path, name="video.mp4", image_indices
     black_frame = np.zeros((height + black_pixels, width, layers),np.uint8)
     black_frame_number = int(fps)
 
+    # Make Movies
     for image in images:
         to_write = False
         if (args.verbose):

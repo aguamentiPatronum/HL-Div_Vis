@@ -22,17 +22,26 @@ def print_df(stats_df):
         print(stats_df)
         
 # help_function(args, stream_folder, random_states_with_context, key_states = image_indices)
-def help_function(args, stream_folder, random_states_with_context, key_states):
+def help_function(args, stream_folder, key_states):
     logger = logging.getLogger()
     coloredlogs.install(level='DEBUG', fmt='%(asctime)s,%(msecs)03d %(filename)s[%(process)d] %(levelname)s %(message)s')
 
     logger.setLevel(logging.DEBUG)
-    
+    print("In help function of video_generation.py")
     parameter_string = make_parameter_string(args)
     video_folder = os.path.join(stream_folder,'smooth_stream_vid_max/')
     
     if args.verbose:
+        logger.info("Making highlights video")
+    print("Making highlights video")
+    image_folder = os.path.join(stream_folder, 'screen_smooth/')
+    video_name = 'highlights_div_' + parameter_string + '.mp4'
+    image_utils.generate_video(args, image_folder, video_folder, video_name,
+                           image_indices=key_states)
+                               
+    if args.verbose:
         logger.info("Making highlights LRP video")
+    print("Making highlights LRP video")
     image_folder = os.path.join(stream_folder, 'argmax_smooth/')
     video_name = 'highlights_div_lrp_' + parameter_string + '.mp4'
     image_utils.generate_video(args, image_folder, video_folder, video_name,
@@ -40,44 +49,38 @@ def help_function(args, stream_folder, random_states_with_context, key_states):
     
     if args.verbose:
         logger.info("Making highlights blur video")
+    print("Making highlights blur video")
     image_folder = os.path.join(stream_folder, 'blur_argmax/')
     video_name = 'highlights_div_blur_' + parameter_string + '.mp4'
     image_utils.generate_video(args, image_folder, video_folder, video_name,
                                image_indices=key_states)
-    
-    if args.verbose:
-        logger.info("Making highlights video")
-    image_folder = os.path.join(stream_folder, 'screen_smooth/')
-    video_name = 'highlights_div_' + parameter_string + '.mp4'
-    image_utils.generate_video(args, image_folder, video_folder, video_name,
-                               image_indices=key_states)
                                
-    counter = 0
-    for random_state_set in random_states_with_context:
-        if args.verbose:
-            logger.info("Cycling through the pre-generated list of random states to make random movies.")
-            logger.info("Starting with saliency maps")
-            print("Starting with random saliency maps")
-        image_folder = os.path.join(stream_folder, 'argmax_smooth/')
-        video_name = 'random_lrp_' + str(counter+1) + '_' + parameter_string + '.mp4'
-        image_utils.generate_video(args, image_folder, video_folder, video_name,
-                                   image_indices=random_state_set)
-               
-        if args.verbose:
-            logger.info("And making normal video.")
-        image_folder = os.path.join(stream_folder, 'screen_smooth/')
-        video_name = 'random_' + str(counter+1) + '_' + parameter_string + '.mp4'
-        image_utils.generate_video(args, image_folder, video_folder, video_name,
-                                   image_indices=random_state_set)
-        
-        if args.verbose:
-            logger.info("Now making random blurred video. Sounds less useful than it is...")
-            print("Random blurred video")
-        image_folder = os.path.join(stream_folder, 'blur_argmax/')
-        video_name = 'random_blur_' + str(counter+1) + '_' + parameter_string + '.mp4'
-        image_utils.generate_video(args, image_folder, video_folder, video_name,
-                                   image_indices=random_state_set)
-        counter = counter + 1
+#    counter = 0
+#    for random_state_set in random_states_with_context:
+#        if args.verbose:
+#            logger.info("Cycling through the pre-generated list of random states to make random movies.")
+#            logger.info("Starting with saliency maps")
+#            print("Starting with random saliency maps")
+#        image_folder = os.path.join(stream_folder, 'argmax_smooth/')
+#        video_name = 'random_lrp_' + str(counter+1) + '_' + parameter_string + '.mp4'
+#        image_utils.generate_video(args, image_folder, video_folder, video_name,
+#                                   image_indices=random_state_set)
+#
+#        if args.verbose:
+#            logger.info("And making normal video.")
+#        image_folder = os.path.join(stream_folder, 'screen_smooth/')
+#        video_name = 'random_' + str(counter+1) + '_' + parameter_string + '.mp4'
+#        image_utils.generate_video(args, image_folder, video_folder, video_name,
+#                                   image_indices=random_state_set)
+#
+#        if args.verbose:
+#            logger.info("Now making random blurred video. Sounds less useful than it is...")
+#            print("Random blurred video")
+#        image_folder = os.path.join(stream_folder, 'blur_argmax/')
+#        video_name = 'random_blur_' + str(counter+1) + '_' + parameter_string + '.mp4'
+#        image_utils.generate_video(args, image_folder, video_folder, video_name,
+#                                   image_indices=random_state_set)
+#        counter = counter + 1
 
     #
 
@@ -181,25 +184,24 @@ def generate_videos(args, random_states_with_context):
     stream_folder = args.stream_folder
     print("Calling get key states")
     image_indices = get_key_states(args, stream_folder, load_states = False)
-    image_indices2 = []
-    for num in image_indices:
-        image_indices2.append(int(num))
-    ls = [type(item) for item in image_indices]
-    print("Type of key states list:")
-    print(ls)
-    ls = [type(item) for item in image_indices2]
-    print("Type of key states list 2:")
-    print(ls)
-    image_indices3 = []
-    image_indices3.append(image_indices2)
-    ls = [type(item) for item in image_indices3]
-    print("Type of key states list 3:")
-    print(ls)
-    ls = [type(item) for item in random_states_with_context]
-    print("Type of random list:")
-    print(ls)
-    help_function(args, stream_folder, random_states_with_context, key_states = image_indices2)
-#    help_function(args, stream_folder, random_states_with_context, key_states = image_indices3)
+#    image_indices2 = []
+#    for num in image_indices:
+#        image_indices2.append(int(num))
+#    ls = [type(item) for item in image_indices]
+#    print("Type of key states list:")
+#    print(ls)
+#    ls = [type(item) for item in image_indices2]
+#    print("Type of key states list 2:")
+#    print(ls)
+#    image_indices3 = []
+#    image_indices3.append(image_indices2)
+#    ls = [type(item) for item in image_indices3]
+#    print("Type of key states list 3:")
+#    print(ls)
+#    ls = [type(item) for item in random_states_with_context]
+#    print("Type of random list:")
+#    print(ls)
+    help_function(args, stream_folder, key_states = image_indices)
 
 if __name__ == '__main__':
     generate_videos(args)

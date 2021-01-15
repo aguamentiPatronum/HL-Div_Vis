@@ -102,9 +102,6 @@ def overlay_stream(args):
     with pd.option_context('display.max_rows', None, 'display.max_columns', None):
         print("Traditionally generated key states with context: ")
         print(key_states_with_context)
-        
-    # Then generate needed number of random states
-    random_states, random_states_with_context, consolidated_random_states_list_without_repeats = get_random_states_list(args, logger, key_states_with_context)
 
     if args.verbose:
         logger.debug("make original saliency maps for all necessary states")
@@ -117,36 +114,36 @@ def overlay_stream(args):
             frame_index = int(image_str[2].replace(".png", ""))
             
             if args.verbose:
-                logger.info("About to compare state to consolidated_random_states_list_without_repeats list....")
+                logger.info("About to compare state " + str(state_index) + " to consolidated_random_states_list_without_repeats list....")
 
-#            if (state_index in consolidated_random_states_list_without_repeats) or (consolidated_random_states_list_without_repeats is None):
-            if args.verbose:
-                logger.info("State " + str(state_index) + " is in consolidated_random_states_list_without_repeats list: " + str(consolidated_random_states_list_without_repeats))
-            i = cv2.imread(os.path.join(image_folder, image))
-            i = cv2.cvtColor(i, cv2.COLOR_BGR2RGB)
-            if old_image is not None:
-                smooth_i = np.maximum(old_image,i)
-                old_image = i
-                i = smooth_i
-            else:
-                old_image = i
-
-            image_utils.save_image(os.path.join(save_folder2, image) ,i)
-
-            saliency_filename = raw_argmax_base + "_" + str(state_index) + ".npy"
-            saliency_map = np.load(saliency_filename)
-            saliency_map = image_utils.normalise_image(saliency_map)
-            if saliency_map.sum() > 0.9 * saliency_map.shape[0] * saliency_map.shape[1] * saliency_map.shape[2]:
+            if (state_index in key_states_with_context) or (key_states_with_context is None):
                 if args.verbose:
-                    logger.info(state_index)
-                saliency_map = np.zeros(saliency_map.shape)
-            if old_saliency_map is not None:
-                saliency_map = interpolate(old_saliency_map, saliency_map, frame_index)
-            saliency = image_utils.output_saliency_map(saliency_map[:, :, 3], i, edges=False)
-            index = str(state_index) + '_' + str(frame_index)
-            stream_generator.save_frame(saliency, save_folder + "/argmax", index)
-            if frame_index == 3:
-                old_saliency_map = saliency_map
+                    logger.info("State " + str(state_index) + " is in consolidated_random_states_list_without_repeats list: " + str(key_states_with_context))
+                i = cv2.imread(os.path.join(image_folder, image))
+                i = cv2.cvtColor(i, cv2.COLOR_BGR2RGB)
+                if old_image is not None:
+                    smooth_i = np.maximum(old_image,i)
+                    old_image = i
+                    i = smooth_i
+                else:
+                    old_image = i
+
+                image_utils.save_image(os.path.join(save_folder2, image) ,i)
+
+                saliency_filename = raw_argmax_base + "_" + str(state_index) + ".npy"
+                saliency_map = np.load(saliency_filename)
+                saliency_map = image_utils.normalise_image(saliency_map)
+                if saliency_map.sum() > 0.9 * saliency_map.shape[0] * saliency_map.shape[1] * saliency_map.shape[2]:
+                    if args.verbose:
+                        logger.info(state_index)
+                    saliency_map = np.zeros(saliency_map.shape)
+                if old_saliency_map is not None:
+                    saliency_map = interpolate(old_saliency_map, saliency_map, frame_index)
+                saliency = image_utils.output_saliency_map(saliency_map[:, :, 3], i, edges=False)
+                index = str(state_index) + '_' + str(frame_index)
+                stream_generator.save_frame(saliency, save_folder + "/argmax", index)
+                if frame_index == 3:
+                    old_saliency_map = saliency_map
         except Exception as e:
             logger.error(e)
             logger.error('Try next image.')
@@ -163,12 +160,12 @@ def overlay_stream(args):
             frame_index = int(image_str[2].replace(".png", ""))
             
             if args.verbose:
-                logger.info("About to compare state to consolidated_random_states_list_without_repeats list....")
+                logger.info("About to compare " + str(state_index) + " to consolidated_random_states_list_without_repeats list....")
             
 #            image_indices = [4,5,6,7]
-            if (state_index in consolidated_random_states_list_without_repeats) or (consolidated_random_states_list_without_repeats is None):
+            if (state_index in key_states_with_context) or (key_states_with_context is None):
                 if args.verbose:
-                    logger.info("State " + str(state_index) + " is in consolidated_random_states_list_without_repeats list: " + str(consolidated_random_states_list_without_repeats))
+                    logger.info("State " + str(state_index) + " is in consolidated_random_states_list_without_repeats list: " + str(key_states_with_context))
                 i = cv2.imread(os.path.join(image_folder, image))
                 i = cv2.cvtColor(i, cv2.COLOR_BGR2RGB)
                 if old_image is not None:
@@ -201,10 +198,10 @@ def overlay_stream(args):
             
     if args.generate_video is True:
         print("Calling generate videos")
-        ls = [type(item) for item in random_states_with_context]
+        ls = [type(item) for item in key_states_with_context]
         print("Type of random list before being passed is:")
         print(ls)
-        video_generation.generate_videos(args, random_states_with_context)
+        video_generation.generate_videos(args, key_states_with_context)
 
 
 if __name__ == "__main__":

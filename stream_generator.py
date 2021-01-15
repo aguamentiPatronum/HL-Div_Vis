@@ -254,12 +254,12 @@ def generate_stream(args):
         if (args.verbose):
             logger.info("Step " + str(step) + " out of " + str(args.num_steps))
         step = step + 1
-        ram = env.unwrapped._get_ram()
-        if args.verbose:
-            logger.info("Action is: ")
-            logger.info(action_names[action])
-            logger.info("RAM is: ")
-            logger.info(ram)
+#        ram = env.unwrapped._get_ram()
+#        if args.verbose:
+#            logger.info("Action is: ")
+#            logger.info(action_names[action])
+#            logger.info("RAM is: ")
+#            logger.info(ram)
 #        rv.store_ram_info(action, ram)
         # only collect data after the first four steps
         if _ >= 4:

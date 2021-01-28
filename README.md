@@ -6,3 +6,6 @@ To run an example evaluation:
 python run_model.py --agent-model pp_23M.h5 --watch --num-steps 1000 --generate-stream --generate-video --verbose
 
 The resulting data will be saved one folder above, in a directory called ``evaluate_agent_data''.
+
+If you get this error, increase timestep:
+ValueError: Cannot take a larger sample than population when 'replace=False'
